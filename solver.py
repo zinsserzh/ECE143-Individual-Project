@@ -1,4 +1,5 @@
 
+import random
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,6 +36,29 @@ class Solver:
 		# Argument checks are done by Tower.__init__
 		return Tower(self, x1, x2, y1, y2)
 
+	def create_random_tower(self):
+		"""Create a random tower. Sizes are uniformly distributed, coordinates
+		are uniformly distributed.
+
+		Returns:
+		    Tower: The generated tower
+		"""
+		# Get a random width
+		width = random.randint(1, self.width)
+		# Get a random x1
+		x1 = random.randint(0, self.width - width)
+		# Get x2
+		x2 = x1 + width
+
+		# Get a random height
+		height = random.randint(1, self.height)
+		# Get a random y1
+		y1 = random.randint(0, self.height - height)
+		# Get y2
+		y2 = y1 + height
+
+		return self.create_tower(x1, x2, y1, y2)
+
 	def add_tower(self, tower):
 		"""Add a tower to the solution. Assign a rank to it and update solver's
 		states.
@@ -62,7 +86,7 @@ class Solver:
 		self.coverage[tower.mask] = tower.rank
 
 	def plot(self):
-		plt.imshow(self.coverage, 'hot')
+		plt.imshow(self.coverage, 'hot', vmax=8)
 		plt.colorbar()
 
 

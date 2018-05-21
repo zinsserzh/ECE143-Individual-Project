@@ -33,9 +33,9 @@ class Tower:
 		if not all(isinstance(coordinate, int) for coordinate in (x1, y1, x2, y2)):
 			raise TypeError ("All coordinates should be of type int")
 
-		if not 0 <= x1 < x2 < solver.width:
+		if not 0 <= x1 < x2 <= solver.width:
 			raise ValueError ("Invalid x coordinates")
-		if not 0 <= y1 < y2 < solver.height:
+		if not 0 <= y1 < y2 <= solver.height:
 			raise ValueError ("Invalid y coordinates")
 
 		self.x1 = x1
@@ -55,7 +55,7 @@ class Tower:
 		Returns:
 		    tuple: A index tuple
 		"""
-		return np.s_[self.y1:self.y2+1, self.x1:self.x2+1]
+		return np.s_[self.y1:self.y2, self.x1:self.x2]
 
 	@property
 	def solver(self):
