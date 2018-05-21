@@ -64,7 +64,13 @@ class Solver:
 
 		Returns:
 		    Tower: The generated tower
+
+		Raises:
+		    RuntimeError: The entire space has been covered
 		"""
+		if np.all(self.coverage):
+			raise RuntimeError ("The entire space has been covered")
+
 		tower = self.generate_random_tower()
 		while np.all(self.coverage[tower.mask]):
 			tower = self.generate_random_tower()
@@ -107,8 +113,28 @@ class Solver:
 		self.tower_list.append(tower)
 		self.coverage[tower.mask] = tower.rank
 
-	def plot(self):
-		plt.imshow(self.coverage, 'hot', vmin=0)
-		plt.colorbar()
+	def plot_coverage(self):
+		plt.imshow(self.coverage>0, 'hot', vmin=0, vmax=4)
+
+	def plot_coverage_history(self):
+		coverage = self.coverage.copy()
+		coverage[coverage != 0] += 8
+		vmax = max(8, np.max(coverage))
+		coverage[coverage == vmax] += 8
+		vmax += 8
+		plt.imshow(coverage, 'hot', vmin=0, vmax=vmax)
+
+	def plot_coverage_overlay(self, tower_high=None, tower_low=None, im=None):
+		data = np.zeros_like(self.coverage)
+		data[self.coverage != 0] += 2
+		if tower_high:
+			data[tower_high.mask] += 7
+		if tower_low:
+			data[tower_low.mask] += 1
+		if im:
+			im.set_data(data)
+		else:
+			im = plt.imshow(data, 'hot', vmin=0, vmax=8)
+		return im
 
 

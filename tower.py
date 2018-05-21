@@ -15,7 +15,7 @@ class Tower:
 	    y2 (int): y2 coordinate
 	"""
 
-	def __init__(self, solver, x1, x2, y1, y2):
+	def __init__(self, solver, x1, x2, y1, y2, rank=None):
 		"""Verify coordinates and create a tower instance for a specific solver
 
 		Args:
@@ -24,6 +24,7 @@ class Tower:
 		    x2 (int): x2 coordinate
 		    y1 (int): y1 coordinate
 		    y2 (int): y2 coordinate
+		    rank (int, optional): The nth tower for the solver.
 
 		Raises:
 		    TypeError: Wrong argument types
@@ -44,7 +45,23 @@ class Tower:
 		self.y1 = y1
 		self.y2 = y2
 
-		self.rank = None
+		self.rank = rank
+
+	def __copy__(self):
+		"""Create a copy of self
+
+		Returns:
+		    Tower: A copy of the tower
+		"""
+		return Tower(self.solver, self.x1, self.x2, self.y1, self.y2, self.rank)
+
+	def copy(self):
+		"""A wrapper to __copy__
+
+		Returns:
+		    Tower: A copy of the tower
+		"""
+		return self.__copy__()
 
 	@property
 	def mask(self):
