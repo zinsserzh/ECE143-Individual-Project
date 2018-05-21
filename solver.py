@@ -36,8 +36,8 @@ class Solver:
 		# Argument checks are done by Tower.__init__
 		return Tower(self, x1, x2, y1, y2)
 
-	def create_random_tower(self):
-		"""Create a random tower. Sizes are uniformly distributed, coordinates
+	def generate_random_tower(self):
+		"""Generate a random tower. Sizes are uniformly distributed, coordinates
 		are uniformly distributed.
 
 		Returns:
@@ -58,6 +58,28 @@ class Solver:
 		y2 = y1 + height
 
 		return self.create_tower(x1, x2, y1, y2)
+
+	def generate_random_valid_tower_untrimmed(self):
+		"""Generate a random tower whose area is not totally covered yet.
+
+		Returns:
+		    Tower: The generated tower
+		"""
+		tower = self.generate_random_tower()
+		while np.all(self.coverage[tower.mask]):
+			tower = self.generate_random_tower()
+		return tower
+
+	def generate_random_valid_tower_trimmed(self):
+		"""Generate a random tower whose area is not totally covered yet, and
+		then trim its coverage.
+
+		Returns:
+		    Tower: The generated tower
+		"""
+		tower = self.generate_random_valid_tower_untrimmed()
+		tower.trim()
+		return tower
 
 	def add_tower(self, tower):
 		"""Add a tower to the solution. Assign a rank to it and update solver's
@@ -86,7 +108,7 @@ class Solver:
 		self.coverage[tower.mask] = tower.rank
 
 	def plot(self):
-		plt.imshow(self.coverage, 'hot', vmax=8)
+		plt.imshow(self.coverage, 'hot', vmin=0)
 		plt.colorbar()
 
 
