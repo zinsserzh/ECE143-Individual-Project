@@ -1,4 +1,11 @@
+"""solver.py
 
+Jinzhe Zhang
+A99000241
+
+Provides Solver class as a wrapper/container/handle for the entire problem.
+
+"""
 import random
 import matplotlib
 import numpy as np
@@ -6,7 +13,16 @@ import matplotlib.pyplot as plt
 from tower import Tower
 
 class Solver:
-	"""docstring for Solver"""
+	"""docstring for Solver
+
+	Attributes:
+	    coverage (np.ndarray): The current coverage. 0 means uncovered, other
+	                           values means covered by the tower of that rank
+	    height (int): The height of the problem size
+	    width (int): The width of the problem size
+	    num_tower (int): Number of online towers
+	    tower_list (list): A list of online towers
+	"""
 	def __init__(self, height, width):
 		"""Initialize a solver
 
@@ -121,6 +137,17 @@ class Solver:
 		self.coverage[tower.mask] = tower.rank
 
 	def plot_coverage(self, im=None):
+		"""Plot the current coverage in a binary form.
+		Black means uncovered.
+		Dark red means covered.
+
+		Args:
+		    im (AxiImage, optional): If set, update the data instead of creating
+		                             a new plot.
+
+		Returns:
+		    AxiImage: The figure used to plot
+		"""
 		data = self.coverage > 0
 		if im:
 			im.set_data(data)
@@ -129,6 +156,15 @@ class Solver:
 		return im
 
 	def plot_coverage_history(self, im=None):
+		"""Plot the current coverage with different color on each tower.
+
+		Args:
+		    im (AxiImage, optional): If set, update the data instead of creating
+		                             a new plot.
+
+		Returns:
+		    AxiImage: The figure used to plot
+		"""
 		data = self.coverage.copy()
 		data[data != 0] += 8
 		vmax = max(8, np.max(data))
@@ -142,6 +178,17 @@ class Solver:
 		return im
 
 	def plot_coverage_overlay(self, tower_high=None, tower_low=None, im=None):
+		"""Plot the current coverage with two extra towers overlayed.
+
+		Args:
+		    tower_high (Tower, optional): Tower that will be strongly highlighted.
+		    tower_low (Tower, optional): Tower that will be lightly highlighted.
+		    im (AxiImage, optional): If set, update the data instead of creating
+		                             a new plot.
+
+		Returns:
+		    AxiImage: The figure used to plot
+		"""
 		data = np.zeros_like(self.coverage)
 		data[self.coverage != 0] += 2
 		if tower_high:
@@ -154,4 +201,27 @@ class Solver:
 			im = plt.imshow(data, 'hot', vmin=0, vmax=8)
 		return im
 
+	def solve_once(self):
+		"""Solve the problem once, return the number of towers.
 
+		Returns:
+		    int: Number of tower used to cover the entire space.
+		"""
+		self.clear()
+		while not np.all(self.coverage):
+			self.add_tower(self.generate_random_valid_tower_trimmed())
+		return self.num_tower
+
+	def solve(self, times=1):
+		"""Solve the problem for multiple times, return a list of results
+
+		Args:
+		    times (int, optional): Number of times to solve the problem
+
+		Returns:
+		    np.array: A list of results (number of towers)
+		"""
+		result = np.empty(times, dtype=np.int)
+		for index in xrange(times):
+			result[index] = self.solve_once()
+		return result

@@ -1,4 +1,11 @@
+"""tower.py
 
+Jinzhe Zhang
+A99000241
+
+Provides Tower class to represent towers in the problem. Tower.trim is most
+important function.
+"""
 import weakref
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,27 +16,27 @@ class Tower:
 	"""Tower class to represent towers for a specific solver instance
 
 	Attributes:
-		rank (int): The nth tower for the solver. None mean not yet assigned
-		x1 (int): x1 coordinate
-		x2 (int): x2 coordinate
-		y1 (int): y1 coordinate
-		y2 (int): y2 coordinate
+	    rank (int): The nth tower for the solver. None mean not yet assigned
+	    x1 (int): x1 coordinate
+	    x2 (int): x2 coordinate
+	    y1 (int): y1 coordinate
+	    y2 (int): y2 coordinate
 	"""
 
 	def __init__(self, solver, x1, x2, y1, y2, rank=None):
 		"""Verify coordinates and create a tower instance for a specific solver
 
 		Args:
-			solver (Solver): The solver this tower is created for
-			x1 (int): x1 coordinate
-			x2 (int): x2 coordinate
-			y1 (int): y1 coordinate
-			y2 (int): y2 coordinate
-			rank (int, optional): The nth tower for the solver.
+		    solver (Solver): The solver this tower is created for
+		    x1 (int): x1 coordinate
+		    x2 (int): x2 coordinate
+		    y1 (int): y1 coordinate
+		    y2 (int): y2 coordinate
+		    rank (int, optional): The nth tower for the solver.
 
 		Raises:
-			TypeError: Wrong argument types
-			ValueError: Invalid arguments
+		    TypeError: Wrong argument types
+		    ValueError: Invalid arguments
 		"""
 		self._solver_weakref = weakref.ref(solver)
 
@@ -52,7 +59,7 @@ class Tower:
 		"""Create a copy of self
 
 		Returns:
-			Tower: A copy of the tower
+		    Tower: A copy of the tower
 		"""
 		return Tower(self.solver, self.x1, self.x2, self.y1, self.y2, self.rank)
 
@@ -60,12 +67,16 @@ class Tower:
 		"""A wrapper to __copy__
 
 		Returns:
-			Tower: A copy of the tower
+		    Tower: A copy of the tower
 		"""
 		return self.__copy__()
 
 	def dump(self):
-		"""Return a string of the rank and coordianates of the current tower"""
+		"""Return a string of the rank and coordianates of the current tower
+
+		Returns:
+		    TYPE: Description
+		"""
 		return "Rank: %(rank)s\tx1: %(x1)d\tx2: %(x2)d\ty1: %(y1)d\ty2: %(y2)d" % self.__dict__
 
 	@property
@@ -76,7 +87,7 @@ class Tower:
 		the tower
 
 		Returns:
-			tuple: A index tuple
+		    tuple: A index tuple
 		"""
 		return np.s_[self.y1:self.y2, self.x1:self.x2]
 
@@ -85,7 +96,7 @@ class Tower:
 		"""Returns the solver which the tower was created for
 
 		Returns:
-			Solver: The solver which the tower was created for
+		    Solver: The solver which the tower was created for
 		"""
 		return self._solver_weakref()
 
@@ -93,10 +104,10 @@ class Tower:
 		"""Check if the tower was created for the solver
 
 		Args:
-			solver (Solver): The solver to be tested
+		    solver (Solver): The solver to be tested
 
 		Returns:
-			bool: Whether the tower was created for the solver
+		    bool: Whether the tower was created for the solver
 		"""
 		return self.solver is solver
 
@@ -108,15 +119,15 @@ class Tower:
 		http://www.drdobbs.com/database/the-maximal-rectangle-problem/184410529
 
 		Changes are made to adapt different orientations and indices. Its bugs
-		are also fixed:
 
+		are also fixed:
 			1.  When re-pushing the active opening, height0 instead of
 				current_height should be used.
 			2.  When closing to a opening with the same height, re-pushing is
 				not needed.
 
 		Raises:
-			RuntimeError: Tower can not be trimmed. Totally covered.
+		    RuntimeError: Tower can not be trimmed. Totally covered.
 		"""
 		# Get sub-area
 		sub_array = self.solver.coverage[self.mask]
@@ -197,7 +208,8 @@ class Tower:
 				render_max()
 
 		def render_cache():
-			"""Render im_cache layer"""
+			"""Render im_cache layer
+			"""
 			cache_data = np.zeros_like(empty_space)
 			for x, height in enumerate(cache):
 				cache_data[int(yy - height + 1) : yy + 1, x] = 1
@@ -205,7 +217,8 @@ class Tower:
 			im_cache.set_data(cache_data)
 
 		def render_opening():
-			"""Render im_opening layer"""
+			"""Render im_opening layer
+			"""
 			if stack:
 				opening_data = np.zeros_like(empty_space)
 				x_list, h_list = (list(t) for t in zip(*stack))
@@ -232,7 +245,8 @@ class Tower:
 			im_examine.set_data(examine_data)
 
 		def render_max():
-			"""Render im_max layer"""
+			"""Render im_max layer
+			"""
 			max_data = np.ma.masked_all_like(empty_space)
 			if max_coordinates[0] is not None:
 				max_data[max_coordinates[2]:max_coordinates[3], max_coordinates[0]:max_coordinates[1]] = 1
