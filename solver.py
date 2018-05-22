@@ -17,6 +17,9 @@ class Solver:
 		self.height = int(height)
 		self.width = int(width)
 
+		self.clear()
+
+	def clear(self):
 		self.coverage = np.zeros((self.height, self.width), dtype=np.uint)
 		self.num_tower = 0
 		self.tower_list = []
@@ -35,6 +38,10 @@ class Solver:
 		"""
 		# Argument checks are done by Tower.__init__
 		return Tower(self, x1, x2, y1, y2)
+
+	def dump_towers(self):
+		"""Render a string the rank and coordiantes of the towers"""
+		return "\n".join(tower.dump() for tower in self.tower_list)
 
 	def generate_random_tower(self):
 		"""Generate a random tower. Sizes are uniformly distributed, coordinates
@@ -113,16 +120,26 @@ class Solver:
 		self.tower_list.append(tower)
 		self.coverage[tower.mask] = tower.rank
 
-	def plot_coverage(self):
-		plt.imshow(self.coverage>0, 'hot', vmin=0, vmax=4)
+	def plot_coverage(self, im=None):
+		data = self.coverage > 0
+		if im:
+			im.set_data(data)
+		else:
+			im = plt.imshow(data, 'hot', vmin=0, vmax=4)
+		return im
 
-	def plot_coverage_history(self):
-		coverage = self.coverage.copy()
-		coverage[coverage != 0] += 8
-		vmax = max(8, np.max(coverage))
-		coverage[coverage == vmax] += 8
+	def plot_coverage_history(self, im=None):
+		data = self.coverage.copy()
+		data[data != 0] += 8
+		vmax = max(8, np.max(data))
+		data[data == vmax] += 8
 		vmax += 8
-		plt.imshow(coverage, 'hot', vmin=0, vmax=vmax)
+		if im:
+			im.set_data(data)
+			im.norm.vmax = vmax
+		else:
+			im = plt.imshow(data, 'hot', vmin=0, vmax=vmax)
+		return im
 
 	def plot_coverage_overlay(self, tower_high=None, tower_low=None, im=None):
 		data = np.zeros_like(self.coverage)
